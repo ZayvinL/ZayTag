@@ -1,12 +1,13 @@
 import nuke
 import CurrentPath
-import SearchPanelB
+import ZayTagPath
 
 
-SearchPanelB.run_show_funa
+ZayTagPath.run_show_funa
 bar = nuke.menu('Nodes')
 toolbar = bar.addMenu("Z")
-toolbar.addCommand('pipline/Plate Search file', SearchPanelB.runshow)
+#toolbar.addCommand('ZayTag', ZayTagPath.runshow)
+toolbar.addCommand('ZayTag', ZayTagPath.run_show_funa)
 
 
 

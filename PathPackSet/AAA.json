@@ -1,0 +1,48 @@
+{
+    "ALLPATHS": [
+        [
+            false,
+            "E:/{0}/{1}/nuke/renders"
+        ],
+        [
+            false,
+            "E:/{0}/{1}/nuke/script"
+        ],
+        [
+            false,
+            "E:/{0}/{1}/palte"
+        ]
+    ],
+    "Renders": [
+        [
+            true,
+            "E:/{0}/{1}/nuke/renders"
+        ]
+    ],
+    "Scripts": [
+        [
+            true,
+            "E:/{0}/{1}/nuke/script"
+        ]
+    ],
+    "all": [
+        [
+            true,
+            "E:/{0}/{1}/nuke/renders"
+        ],
+        [
+            true,
+            "E:/{0}/{1}/nuke/script"
+        ],
+        [
+            true,
+            "E:/{0}/{1}/palte"
+        ]
+    ],
+    "plate": [
+        [
+            true,
+            "E:/{0}/{1}/palte"
+        ]
+    ]
+}
