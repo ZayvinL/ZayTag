@@ -53,6 +53,24 @@ nuke.pluginAddPath("./ZaneTpack/pipline_FolderPath")
 Restart Nuke. Find **ZayTag > 路径标签系统** in the Nodes toolbar menu.
 重启 Nuke，在节点工具栏菜单中找到 **ZayTag > 路径标签系统**。
 
+### Data & Code Separation / 数据与代码分离
+
+By default, path pack config files are stored in `PathPackSet/` under the plugin directory. For multi-user studio environments, you can redirect this to a shared network location by editing `ZayWPanel.py` line ~829:
+
+默认情况下路径设定包的 JSON 文件存储在插件目录的 `PathPackSet/` 下。在多用户工作室环境中，可以通过修改 `ZayWPanel.py` 约第 829 行，将其指向共享网络位置：
+
+```python
+# Default: stored alongside plugin code
+cc = CurrentPath.local_path_get() + "PathPackSet/"
+
+# Custom: point to a shared location accessible by all users
+cc = "/mnt/studio_share/ZayTag/PathPackSet/"
+```
+
+All config files are created with read/write permissions for all users (`0o666` for files, `0o777` for directories), so multiple artists can share the same path pack configuration without permission issues.
+
+所有配置文件在创建时均设置为所有用户可读写权限（文件 `0o666`，目录 `0o777`），确保多位艺术家可以共享路径包配置而不出现权限问题。
+
 ---
 
 ## Usage / 使用指南

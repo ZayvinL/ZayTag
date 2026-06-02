@@ -812,7 +812,11 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
         cc = CurrentPath.local_path_get()
         cc = cc.replace(os.sep, "/")
         if not os.path.exists(cc):
-            os.mkdir(cc)        
+            os.mkdir(cc)
+            try:
+                os.chmod(cc, 0o777)
+            except Exception:
+                pass
         jsfile = cc + "SampleRuler.json"
         # jsfile = "C:/Users/liuxb/.nuke/CheeseTools_7.0/Cheese_PanelTools/SearchPanelB_JSONPathSETING/SearchPanelB_SampleRuler.json"
         if not os.path.exists(jsfile):
@@ -831,6 +835,10 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
         cc = cc.replace(os.sep, "/")
         if not os.path.exists(cc):
             os.mkdir(cc)
+            try:
+                os.chmod(cc, 0o777)
+            except Exception:
+                pass
         cfp = cc
         return cfp
 

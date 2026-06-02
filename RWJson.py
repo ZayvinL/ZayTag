@@ -24,6 +24,11 @@ def WriteJson(path=None, dict_data={}):
         Writedata = json.dumps(dict_data, ensure_ascii=False, sort_keys=True, indent=4)
         with open(path, "w", encoding='utf-8') as f:
             f.write(Writedata)
+    # 保证所有用户可读写
+    try:
+        os.chmod(path, 0o666)
+    except Exception:
+        pass
 
 def ReadJson(path=None):
     # Json Read
