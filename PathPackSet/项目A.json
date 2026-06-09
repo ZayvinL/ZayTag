@@ -1,0 +1,28 @@
+{
+    "ALLPATHS": [
+        [
+            false,
+            "E:/projectA_test/MOV"
+        ],
+        [
+            false,
+            "E:/projectA_test/SEQ1/shot_0010/nuke/"
+        ],
+        [
+            false,
+            "E:/projectA_test/SEQ1/shot_0010/nuke/a"
+        ]
+    ],
+    "MOV素材": [
+        [
+            true,
+            "E:/projectA_test/MOV"
+        ]
+    ],
+    "TIF": [
+        [
+            true,
+            "E:/projectA_test/SEQ1/shot_0010/nuke/"
+        ]
+    ]
+}

@@ -864,12 +864,27 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
                     adp = [False, cb.text()]
                 kbte = adp[-1]
                 self.editkb(kb, kbte, adp)
+
+    def myeditItem_menu(self):
+        kb = self.searchFile
+        selected_items = kb.selectedItems()
+        if not selected_items:
+            return
+        item = selected_items[0]
+        cb = kb.itemWidget(item)
+        if cb.isChecked():
+            adp = [True, cb.text()]
+        else:
+            adp = [False, cb.text()]
+        kbte = adp[-1]
+        self.editkb(kb, kbte, adp)
     
     def menu_scr(self):
         self.a_prepMenu = QMenu()
         if self.sender() == self.searchFile:
             self.a_prepMenu.addAction(QAction(u'添加查找路径', self.searchFile))
             self.a_prepMenu.addAction(QAction(u'删除查找路径', self.searchFile))
+            self.a_prepMenu.addAction(QAction(u'编辑选中路径', self.searchFile))
         self.a_prepMenu.triggered[QAction].connect(self.scr_fun)  # 右键点击 运行
         self.a_prepMenu.exec_(QCursor.pos())
     
@@ -880,6 +895,9 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
 
         if cmmd == u'删除查找路径':
             self.delselitem(self.searchFile)
+
+        if cmmd == u'编辑选中路径':
+            self.myeditItem_menu()
     
     def addkb(self, kb):
         changedtype, messagetext = self.input_dialog_fun()
