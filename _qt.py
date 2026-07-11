@@ -51,6 +51,7 @@ try:
         QDesktopServices,
         QFont,
         QKeySequence,
+        QShortcut,
     )
     QT_VERSION = 6
 
@@ -60,6 +61,7 @@ except ImportError:
         QAbstractItemView,
         QAction,
         QApplication,
+        QShortcut,
         QCheckBox,
         QComboBox,
         QDialog,

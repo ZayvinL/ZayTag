@@ -21,6 +21,7 @@ from _qt import (
     QMessageBox,
     QMimeData,
     QPushButton,
+    QShortcut,
     QStyledItemDelegate,
     Qt,
     QTreeView,
@@ -188,7 +189,7 @@ class MyTreeWa(QWidget):
 
         ## 控件
         self.tree_view = TreeView()
-        self.tree_view.setItemDelegate(FolderMarkDelegate(self.tree_view))
+        # self.tree_view.setItemDelegate(FolderMarkDelegate(self.tree_view))
         self.tree_view.setGeometry(0, 0, 800, 600)
         self.file_model = QFileSystemModel()
         self.file_model.setRootPath(QDir.rootPath())
@@ -207,24 +208,34 @@ class MyTreeWa(QWidget):
 
         act_copy_shortcut = QAction("复制路径 (C)", self.tree_view)
         act_copy_shortcut.setShortcut("C")
+        act_copy_shortcut.setShortcutContext(Qt.WidgetShortcut)
         act_copy_shortcut.triggered.connect(self._shortcut_copy_path)
         self.tree_view.addAction(act_copy_shortcut)
 
         act_expand_shortcut = QAction("展开到文件 (F)", self.tree_view)
         act_expand_shortcut.setShortcut("F")
+        act_expand_shortcut.setShortcutContext(Qt.WidgetShortcut)
         act_expand_shortcut.triggered.connect(self._shortcut_expand_to_files)
         self.tree_view.addAction(act_expand_shortcut)
+
+        act_collapse_shortcut = QAction("闭合文件夹 (W)", self.tree_view)
+        act_collapse_shortcut.setShortcut("W")
+        act_collapse_shortcut.setShortcutContext(Qt.WidgetShortcut)
+        act_collapse_shortcut.triggered.connect(self._shortcut_collapse)
+        self.tree_view.addAction(act_collapse_shortcut)
 
         # 扁平文件列表
         self.flat_list = DragListWidget()
 
         act_flat_copy = QAction("复制路径 (C)", self.flat_list)
         act_flat_copy.setShortcut("C")
+        act_flat_copy.setShortcutContext(Qt.WidgetShortcut)
         act_flat_copy.triggered.connect(self._flat_shortcut_copy)
         self.flat_list.addAction(act_flat_copy)
 
         act_flat_open = QAction("打开文件夹 (F)", self.flat_list)
         act_flat_open.setShortcut("F")
+        act_flat_open.setShortcutContext(Qt.WidgetShortcut)
         act_flat_open.triggered.connect(self._flat_shortcut_open)
         self.flat_list.addAction(act_flat_open)
 
@@ -256,6 +267,12 @@ class MyTreeWa(QWidget):
                 self._expand_to_files(self.tree_view, idx)
                 return
 
+    def _shortcut_collapse(self):
+        for idx in self.tree_view.selectionModel().selectedIndexes():
+            if idx.isValid() and idx.column() == 0:
+                self.tree_view.setExpanded(idx, False)
+                return
+
     def show_context_menu(self, pos):
         active_tree_view = self.tree_view
         active_curtreemod = self.file_model
@@ -278,7 +295,7 @@ class MyTreeWa(QWidget):
                 lambda: self.expand_all_folders(active_tree_view, active_curtreemod, index))
             menu.addAction(action_expand_all)
 
-            action_expand_False = QAction("闭合文件夹", self)
+            action_expand_False = QAction("闭合文件夹 (W)", self)
             action_expand_False.triggered.connect(
                 lambda: self.action_expand_False(active_tree_view, active_curtreemod, index))
             menu.addAction(action_expand_False)

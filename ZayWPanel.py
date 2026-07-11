@@ -108,6 +108,7 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
         self.sampleinfo = QComboBox() # 信息采样的设定规则，
         self.sampleinfo.setEditable(True)
         self.sampleinfo.setToolTip(noteword)
+        self.sampleinfo.currentIndexChanged.connect(self._save_session)
         self.btrefresh2 = QPushButton("从Read获取 (Alt+1)")
         self.btrefresh2.setShortcut("Alt+1")
         self.btrefresh2.setToolTip("从选中 Read 节点提取路径层级信息\nExtract path tokens from selected Read node")
@@ -149,6 +150,7 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
         self.prosetfile.currentIndexChanged.connect(self.reload_pathsset) # 刷新路径集合
         self.prosetfile.currentIndexChanged.connect(self.reload_pathtypeset) # 刷新 路径预设组
         self.prosetfile.currentIndexChanged.connect(self.reload_curpathset) # 刷新路径预设组选项
+        self.prosetfile.currentIndexChanged.connect(self._save_session)
         self.but_add_prosetfile = QPushButton("添加新包")
         self.but_add_prosetfile.setToolTip("CN: 添加新的路径设定包\nEN: Add new path pack")
         self.but_add_prosetfile.clicked.connect(self.but_add_prosetfile_Run)
@@ -229,12 +231,13 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
 <tr><td><b>Alt+2</b></td><td>Sample from script path / 从工程路径获取</td></tr>
 <tr><td><b>C</b></td><td>Copy selected path / 复制选中路径 (Tree &amp; Flat mode)</td></tr>
 <tr><td><b>F</b></td><td>Tree: Expand to files / 展开到文件<br>Flat: Open folder / 打开所在目录</td></tr>
+<tr><td><b>W</b></td><td>Tree: Collapse folder / 闭合文件夹</td></tr>
 </table>
 
 <h3>View Modes / 文件浏览模式</h3>
 <p>Switch via the dropdown next to the path bar:</p>
 <ul>
-<li><b>树 Tree</b> &mdash; Traditional folder tree with green dot marking directories containing files</li>
+<li><b>树 Tree</b> &mdash; Traditional folder tree view</li>
 <li><b>所有文件 All Files</b> &mdash; Recursively list all files in a flat list</li>
 <li><b>序列整理 Sequences</b> &mdash; Auto-group frame sequences into single entries, showing frame range and missing frames</li>
 </ul>
@@ -320,6 +323,7 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
         
         self.but_res_prosetfile_Run()
         self.load_sampleruler()
+        self._load_session()
             
             
         # 应用样式表
@@ -998,14 +1002,49 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
             # changedtype = True
             changedtype = True
         return changedtype, messagetext
-        
-        
+
+    def _session_file(self):
+        return CurrentPath.local_path_get() + "UserSession.json"
+
+    def _save_session(self):
+        try:
+            session = {
+                "last_path_pack": self.prosetfile.currentText(),
+                "last_sample_rule": self.sampleinfo.currentText(),
+            }
+            RWJson.WriteJson(self._session_file(), session)
+        except Exception:
+            pass
+
+    def _load_session(self):
+        try:
+            sf = self._session_file()
+            if not os.path.exists(sf):
+                return
+            session = RWJson.ReadJson(sf)
+            pack_name = session.get("last_path_pack", "")
+            if pack_name:
+                idx = self.prosetfile.findText(pack_name)
+                if idx >= 0:
+                    self.prosetfile.setCurrentIndex(idx)
+            rule_text = session.get("last_sample_rule", "")
+            if rule_text:
+                idx = self.sampleinfo.findText(rule_text)
+                if idx >= 0:
+                    self.sampleinfo.setCurrentIndex(idx)
+        except Exception:
+            pass
+
+
+
 
 nukepgetsear = nukescripts.panels.registerWidgetAsPanel("ZayTagPath.getfileToolspaceal","ZayTag 路径标签系统","QZDFlixuaiobo.ZayTagPath.getfileToolspaceal_ver30",True)
 
 def run_show_funa():
     pane = nuke.getPaneFor("Properties.1")
     nukepgetsear.addToPane(pane)
+
+
 
 
 
