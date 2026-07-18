@@ -1114,7 +1114,10 @@ Check the paths you need, then click a preset on the left to generate file brows
         return changedtype, messagetext
 
     def _session_file(self):
-        return CurrentPath.local_path_get() + "UserSession.json"
+        user_dir = os.path.expanduser("~/.nuke/ZayTag/")
+        if not os.path.exists(user_dir):
+            os.makedirs(user_dir)
+        return user_dir + "UserSession.json"
 
     def _save_session(self):
         try:
