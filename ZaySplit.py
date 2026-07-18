@@ -33,8 +33,11 @@ def Liuxiaobo_Split(mofa,stext,bsb="_"):
     
     """
 
+    if stext is None:
+        return "", []
+
     mfget =  [i for i in mofa.split(",") if i != ""]
-    
+
     rusl = []
     rtv = None
     for i in mfget:

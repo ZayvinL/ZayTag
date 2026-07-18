@@ -107,6 +107,8 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
         
         self.sampleinfo = QComboBox() # 信息采样的设定规则，
         self.sampleinfo.setEditable(True)
+        self.sampleinfo.setObjectName("sampleRuleCombo")
+        self.sampleinfo.setPlaceholderText("输入或选择采样规则...")
         self.sampleinfo.setToolTip(noteword)
         self.sampleinfo.currentIndexChanged.connect(self._save_session)
         self.btrefresh2 = QPushButton("从Read获取 (Alt+1)")
@@ -168,6 +170,7 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
         label_pathstool = QLabel("路径预设组 ：")
         self.pathtype = QListWidget()
         self.pathtype.itemClicked.connect(self._on_preset_clicked)
+        self.pathtype.itemClicked.connect(self._save_session)
         self.but_add_pathtype = QPushButton("保存设定")
         self.but_add_pathtype.setToolTip("CN: 保存当前勾选路径为预设组\nEN: Save checked paths as preset")
         self.but_add_pathtype.clicked.connect(self.but_add_pathtype_Run)
@@ -202,52 +205,94 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
         help_text.setHtml("""
 <h2>ZayTag - Path Label System / 路径标签系统</h2>
 
-<h3>Basic Usage / 基本使用</h3>
-<p><b>1. Sample Path / 采样路径</b><br>
-Click <b>从Read获取</b> or <b>从工程获取</b> to extract path tokens from the current Nuke script or selected Read node.<br>
-Results are comma-separated and filled into the input field, e.g. <code>ProjA,EP01,SH001</code>.</p>
-
-<p><b>2. Path Template / 路径模板</b><br>
-Add search paths in the <b>路径集合</b> tab using <code>{0}</code><code>{1}</code><code>{2}</code>... as placeholders:<br>
-<code>/server/{0}/{1}/{2}/renders/</code><br>
-Check the paths you need, then click a preset on the left to generate file browser tabs.</p>
-
-<p><b>3. Path Pack / 路径设定包</b><br>
-Each project can have its own path pack (JSON file), selected from the <b>路径设定包</b> dropdown.<br>
-Within each pack, create multiple <b>预设组</b> (preset groups) for different path combinations.</p>
-
-<h3>Sampling Rules / 采样规则</h3>
-<p>The sampling rule defines how to split a file path into tokens. Common patterns:</p>
+<h3>1. Sample Rule / 采样规则</h3>
+<p>The <b>采样规则</b> dropdown is an <b>editable combo box</b> — you can type a custom rule directly or select from saved presets.
+Use the orange dropdown button on the right to open the preset list.</p>
+<p><b>采样值</b> input field: extracted tokens appear here, comma-separated. Use <code>{0}</code><code>{1}</code><code>{2}</code>... in path templates to reference them.</p>
+<p>
+<b>从Read获取 (Alt+1)</b> — Sample path from the selected Read node<br>
+<b>从工程获取 (Alt+2)</b> — Sample path from the current Nuke script<br>
+<b>保存采样规则</b> — Save the current rule to the preset list<br>
+<b>删除采样规则</b> — Remove the current rule from presets
+</p>
+<p>Rules use <b>*</b> as separator: <code>*symbol*position</code> = split by symbol, take position.<br>
+Special symbol <b>@</b> = slice by character index (e.g. <code>@*2:7</code>). Multiple rules separated by comma.</p>
+<p>Examples:</p>
 <ul>
-<li><code>*/*-1*_*0,*/*-1*_*1,*/*-1*_*2</code> &mdash; Split by <code>/</code> then <code>_</code>, take positions 0,1,2</li>
-<li><code>*/*-1*@*:3</code> &mdash; Split by <code>/</code> then <code>@</code>, take chars from position 3</li>
+<li><code>*/*-1*_*0,*/*-1*_*1,*/*-1*_*2</code> — Split by <code>/</code> then <code>_</code>, take positions 0,1,2</li>
+<li><code>*/*-1*@*:3</code> — Split by <code>/</code>, take chars from position 3</li>
 </ul>
-<p>Rules use <b>*</b> as separator: <code>*符号*数字</code> = split by symbol, take position. Multiple rules separated by comma.</p>
 
-<h3>Shortcuts / 快捷键</h3>
-<table border=1 cellpadding=4 cellspacing=0>
-<tr><th>Key</th><th>Function / 功能</th></tr>
-<tr><td><b>Alt+1</b></td><td>Sample from Read node / 从 Read 节点获取</td></tr>
-<tr><td><b>Alt+2</b></td><td>Sample from script path / 从工程路径获取</td></tr>
-<tr><td><b>C</b></td><td>Copy selected path / 复制选中路径 (Tree &amp; Flat mode)</td></tr>
-<tr><td><b>F</b></td><td>Tree: Expand to files / 展开到文件<br>Flat: Open folder / 打开所在目录</td></tr>
-<tr><td><b>W</b></td><td>Tree: Collapse folder / 闭合文件夹</td></tr>
+<h3>2. Path Pack / 路径设定包</h3>
+<p>Each project can have its own path pack (JSON file in <code>PathPackSet/</code>). Use the dropdown to switch between packs.</p>
+<p>
+<b>添加新包</b> — Create a new path pack for a project<br>
+<b>删除包</b> — Delete the current path pack
+</p>
+
+<h3>3. Preset Groups / 路径预设组</h3>
+<p>Within each path pack, create multiple preset groups for different path combinations. <b>Click a preset</b> to auto-check its paths in the path collection below.</p>
+<p>
+<b>保存设定</b> — Save currently checked paths as a new preset group<br>
+<b>删除设定</b> — Delete the selected preset group
+</p>
+
+<h3>4. Path Collection / 路径集合</h3>
+<p>Add search paths with <code>{0}</code><code>{1}</code><code>{2}</code>... placeholders that will be replaced by the <b>采样值</b> tokens.<br>
+Check the paths you need, then click a preset on the left to generate file browser tabs.</p>
+<p>Paths only need to be configured in <b>one system's format</b> — the tool auto-converts paths for the current OS (see Section 9).</p>
+<p><b>Right-click menu:</b> Add Path / Delete Path / Edit Selected Path</p>
+<p><b>Double-click</b> a path item to edit it.</p>
+
+<h3>5. File Browser / 文件管理</h3>
+<p>Each generated path opens as a tab. Use the <b>path bar</b> to edit the path and the <b>刷新</b> button to reload.</p>
+<p><b>View Modes / 浏览模式</b> (dropdown next to path bar):</p>
+<ul>
+<li><b>树 Tree</b> — Traditional folder tree view</li>
+<li><b>所有文件 All Files</b> — Recursively list all files in a flat list</li>
+<li><b>序列整理 Sequences</b> — Auto-group frame sequences (e.g. <code>render.%04d.exr 1001-1100</code>), showing frame range and missing frames</li>
+</ul>
+<p><b>Close tabs</b> by clicking the X on each tab.</p>
+
+<h3>6. Shortcuts / 快捷键</h3>
+<table border=1 cellpadding=6 cellspacing=0>
+<tr><th>Key</th><th>Context</th><th>Function / 功能</th></tr>
+<tr><td><b>Alt+1</b></td><td>Global</td><td>Sample from Read node / 从 Read 节点获取</td></tr>
+<tr><td><b>Alt+2</b></td><td>Global</td><td>Sample from script path / 从工程路径获取</td></tr>
+<tr><td><b>C</b></td><td>Tree &amp; Flat</td><td>Copy selected path / 复制选中路径</td></tr>
+<tr><td><b>F</b></td><td>Tree</td><td>Expand to files / 展开到文件</td></tr>
+<tr><td><b>F</b></td><td>Flat</td><td>Open folder in Explorer / 打开所在目录</td></tr>
+<tr><td><b>W</b></td><td>Tree</td><td>Collapse folder / 闭合文件夹</td></tr>
 </table>
 
-<h3>View Modes / 文件浏览模式</h3>
-<p>Switch via the dropdown next to the path bar:</p>
+<h3>7. Right-Click Menu / 右键菜单</h3>
+<p><b>Tree mode:</b></p>
 <ul>
-<li><b>树 Tree</b> &mdash; Traditional folder tree view</li>
-<li><b>所有文件 All Files</b> &mdash; Recursively list all files in a flat list</li>
-<li><b>序列整理 Sequences</b> &mdash; Auto-group frame sequences into single entries, showing frame range and missing frames</li>
+<li>复制路径 (C) — Copy path to clipboard</li>
+<li>打开文件 — Open file with system default application</li>
+<li>展开文件夹 — Expand folder one level</li>
+<li>闭合文件夹 (W) — Collapse folder</li>
+<li>展开到文件 (F) — Recursively expand to leaf files</li>
+<li>选中文件夹下的所有文件作为Read导入 — Import all files under folder as Read nodes</li>
+</ul>
+<p><b>Flat / Sequence mode:</b></p>
+<ul>
+<li>复制路径 — Copy path to clipboard</li>
+<li>在资源管理器打开 — Open in system file explorer</li>
+<li>作为Read导入 — Import as Read node</li>
 </ul>
 
-<h3>Right-Click Menu / 右键菜单</h3>
-<p><b>Tree mode:</b> Copy Path / Open File / Expand Folder / Collapse Folder / Expand to Files / Import as Read</p>
-<p><b>Flat mode:</b> Copy Path / Open in Explorer / Import as Read</p>
+<h3>8. Drag &amp; Drop / 拖拽</h3>
+<p>Files from both tree and flat/sequence list can be dragged into the Nuke Node Graph to create Read nodes.</p>
 
-<h3>Drag &amp; Drop / 拖拽</h3>
-<p>Files from both tree and flat list can be dragged into the Nuke Node Graph to create Read nodes.</p>
+<h3>9. System Path Conversion / 系统路径转换</h3>
+<p>The <code>xitongchange()</code> function in <code>ZayWPanel.py</code> is called automatically when generating file browser tabs. It detects the current operating system and converts path prefixes accordingly, so you only need to maintain one set of paths per project — they adapt to Windows, Linux, or macOS automatically.</p>
+<p><code>xitongchange()</code> 函数在生成文件浏览器标签页时自动调用，检测当前操作系统并转换路径前缀。只需维护一套路径即可在 Windows、Linux、macOS 间自动适配。</p>
+<p>Edit the function body in <code>ZayWPanel.py</code> to define your own platform-specific path mappings.</p>
+<p>在 <code>ZayWPanel.py</code> 中编辑该函数以定义自己的平台路径映射规则。</p>
+
+<h3>10. Session Memory / 会话记忆</h3>
+<p>The tool automatically remembers your last selections — path pack, sample rule, and preset group — and restores them on next launch.</p>
 """)
         help_layout = QVBoxLayout(self.widc)
         help_layout.addWidget(help_text)
@@ -321,8 +366,14 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
         # self.resize(700, 500)
         self.setWindowTitle("ZayTag 路径标签系统")
         
+        self.prosetfile.blockSignals(True)
         self.but_res_prosetfile_Run()
+        self.prosetfile.blockSignals(False)
+
+        self.sampleinfo.blockSignals(True)
         self.load_sampleruler()
+        self.sampleinfo.blockSignals(False)
+
         self._load_session()
             
             
@@ -384,6 +435,36 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
             QComboBox::drop-down {
                 border: none;
                 background: transparent;
+            }
+            QComboBox::down-arrow {
+                width: 14px;
+                height: 14px;
+            }
+            QComboBox#sampleRuleCombo {
+                padding: 3px 28px 3px 6px;
+            }
+            QComboBox#sampleRuleCombo QLineEdit {
+                background-color: #252526;
+                color: #d4d4d4;
+                border: none;
+                padding: 0px;
+            }
+            QComboBox#sampleRuleCombo::drop-down {
+                background-color: #a0682a;
+                border-left: 1px solid #6b4520;
+                border-top-right-radius: 2px;
+                border-bottom-right-radius: 2px;
+                width: 24px;
+            }
+            QComboBox#sampleRuleCombo:focus::drop-down {
+                background-color: #c08038;
+            }
+            QComboBox#sampleRuleCombo::drop-down:hover {
+                background-color: #c08038;
+            }
+            QComboBox#sampleRuleCombo::down-arrow {
+                width: 12px;
+                height: 12px;
             }
             QComboBox QAbstractItemView::item:selected {
                 background-color: #8b5e28;
@@ -504,27 +585,49 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
         self.CreatedFileExpo(SePathGot)
     
     # 路径转换设定
-    def xitongchange(self,getlist=[]):
-        if getlist != []:
-            if sys.platform.startswith('win'):
-                # Windows 系统
-                return getlist
+    def xitongchange(self, getlist=None):
+        if getlist is None:
+            getlist = []
+        if not getlist:
+            return getlist
 
-            elif sys.platform.startswith('darwin'):
-                # macOS 系统
-                print("macOS")
-                return getlist
-                    
-            elif sys.platform.startswith('linux'):
-                # Linux 系统
-                newlist = []
-                for i in getlist:
-                    pass
-                    
-            else:
-                # 其他系统
-                print("other??")
-                return getlist
+        curse = self._cur_prosetfile_path()
+        if not curse or not os.path.exists(curse):
+            return getlist
+
+        try:
+            data = RWJson.ReadJson(curse)
+            sysmap = data.get("_systemMap", {})
+        except Exception:
+            return getlist
+
+        if not sysmap:
+            return getlist
+
+        # 确定当前平台对应的转换规则 key
+        if sys.platform.startswith('win'):
+            rule_key = "linux_to_win"
+        elif sys.platform.startswith('linux'):
+            rule_key = "win_to_linux"
+        elif sys.platform.startswith('darwin'):
+            rule_key = "win_to_mac"
+        else:
+            return getlist
+
+        rules = sysmap.get(rule_key, [])
+        if not rules:
+            return getlist
+
+        newlist = []
+        for path in getlist:
+            converted = path
+            for src, dst in rules:
+                if path.startswith(src):
+                    converted = dst + path[len(src):]
+                    break
+            newlist.append(converted)
+
+        return newlist
     
     
     def delAllShowpage(self, kb=None):
@@ -553,9 +656,16 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
                 getf = None
         
 
+        if not getf:
+            if thb == "READ":
+                QMessageBox.warning(self, "提示", "请先选中一个 Read 节点")
+            else:
+                QMessageBox.warning(self, "提示", "请先保存工程文件")
+            return
+
         typef = self.sampleinfo.currentText()
 
-        
+
         self.qed_values.setText("")
         rtv, rtvlist = cps.Liuxiaobo_Split(typef, getf)
         if rtvlist:
@@ -1008,9 +1118,11 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
 
     def _save_session(self):
         try:
+            cur_preset = self.pathtype.currentItem()
             session = {
                 "last_path_pack": self.prosetfile.currentText(),
                 "last_sample_rule": self.sampleinfo.currentText(),
+                "last_preset_group": cur_preset.text() if cur_preset else "",
             }
             RWJson.WriteJson(self._session_file(), session)
         except Exception:
@@ -1026,7 +1138,18 @@ Within each pack, create multiple <b>预设组</b> (preset groups) for different
             if pack_name:
                 idx = self.prosetfile.findText(pack_name)
                 if idx >= 0:
+                    # 先切到 -1 确保后续 setCurrentIndex 一定会触发 currentIndexChanged
+                    self.prosetfile.blockSignals(True)
+                    self.prosetfile.setCurrentIndex(-1)
+                    self.prosetfile.blockSignals(False)
                     self.prosetfile.setCurrentIndex(idx)
+            # 恢复路径预设组选择（必须在 prosetfile 设置之后，reload_pathtypeset 已在信号链中重填列表）
+            preset_name = session.get("last_preset_group", "")
+            if preset_name:
+                items = self.pathtype.findItems(preset_name, Qt.MatchExactly)
+                if items:
+                    self.pathtype.setCurrentItem(items[0])
+                    self.reload_curpathset()
             rule_text = session.get("last_sample_rule", "")
             if rule_text:
                 idx = self.sampleinfo.findText(rule_text)
