@@ -129,7 +129,8 @@ The `xitongchange()` function in `ZayWPanel.py` is called automatically when gen
 `xitongchange()` 函数在生成文件浏览器标签页时自动调用，检测当前操作系统并转换路径前缀。只需维护一套路径即可在 Windows、Linux、macOS 间自动适配。
 
 Edit the function body in `ZayWPanel.py` to define your own platform-specific path mappings.
-在 `ZayWPanel.py` 中编辑该函数以定义自己的平台路径映射规则。
+在 `ZayWPanel.py` 中编辑该函数以定义自己的平台路径映射规则。# 先试试直接 push，看具体报什么错
+git push origin main
 
 ---
 

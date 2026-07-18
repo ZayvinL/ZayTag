@@ -293,6 +293,10 @@ Check the paths you need, then click a preset on the left to generate file brows
 
 <h3>10. Session Memory / 会话记忆</h3>
 <p>The tool automatically remembers your last selections — path pack, sample rule, and preset group — and restores them on next launch.</p>
+<p> 自动记录加载最后最近一次的设置<p>
+<h3>10. github /gitee/ 仓库</h3>
+</p>https://github.com/ZayvinL/ZayTag</p>
+</p>https://gitee.com/q-wuan90/ZayTag</p>
 """)
         help_layout = QVBoxLayout(self.widc)
         help_layout.addWidget(help_text)
