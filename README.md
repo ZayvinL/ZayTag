@@ -228,9 +228,13 @@ pipline_ZayTagPath/
 
 ## Credits / 致谢
 
-- **Author / 作者：** Zayvin 
-- **Original concept / 原始概念：** Zayvin 
+- **Author / 作者：** LIUXIAOBO (刘晓波)
+- **GitHub：** [ZayvinL](https://github.com/ZayvinL)
+- **Original concept / 原始概念：** LIUXIAOBO (刘晓波)
 
 ## License / 许可
 
-MIT
+Copyright 2026 LIUXIAOBO (刘晓波).
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+See [NOTICE](./NOTICE) for copyright attribution.

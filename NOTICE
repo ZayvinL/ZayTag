@@ -1,0 +1,20 @@
+ZayTag — Nuke Path Label System (Nuke 路径标签系统)
+========================================================================
+
+Copyright 2026 LIUXIAOBO (刘晓波)
+
+This product was independently developed by LIUXIAOBO (刘晓波) using
+personal resources and time, and includes software developed at:
+
+    https://github.com/ZayvinL/ZayTag
+
+Author Information:
+  Name:    LIUXIAOBO (刘晓波)
+  Email:   liucixiaobo@outlook.com
+  GitHub:  https://github.com/ZayvinL
+  WeChat:  Zayvin
+
+Third-Party Dependencies:
+  This software depends on the Nuke Python API provided by Foundry.
+  Nuke is a registered trademark of Foundry. This project is not
+  affiliated with, endorsed by, or sponsored by Foundry.
