@@ -216,102 +216,28 @@ class getfileToolspaceal(QMainWindow):  # QDialog # QWidget # QMainWindow
 
         help_text = QTextBrowser()
         help_text.setOpenExternalLinks(True)
-        help_text.setHtml("""
-<h2>ZayTag - Path Label System / 路径标签系统</h2>
 
-<h3>1. Sample Rule / 采样规则</h3>
-<p>The <b>采样规则</b> dropdown is an <b>editable combo box</b> — you can type a custom rule directly or select from saved presets.
-Use the orange dropdown button on the right to open the preset list.</p>
-<p><b>采样值</b> input field: extracted tokens appear here, comma-separated. Use <code>{0}</code><code>{1}</code><code>{2}</code>... in path templates to reference them.</p>
-<p>
-<b>从Read获取 (Alt+1)</b> — Sample path from the selected Read node<br>
-<b>从工程获取 (Alt+2)</b> — Sample path from the current Nuke script<br>
-<b>保存采样规则</b> — Save the current rule to the preset list<br>
-<b>删除采样规则</b> — Remove the current rule from presets
-</p>
-<p>Rules use <b>*</b> as separator: <code>*symbol*position</code> = split by symbol, take position.<br>
-Special symbol <b>@</b> = slice by character index (e.g. <code>@*2:7</code>). Multiple rules separated by comma.</p>
-<p>Examples:</p>
-<ul>
-<li><code>*/*-1*_*0,*/*-1*_*1,*/*-1*_*2</code> — Split by <code>/</code> then <code>_</code>, take positions 0,1,2</li>
-<li><code>*/*-1*@*:3</code> — Split by <code>/</code>, take chars from position 3</li>
-</ul>
-
-<h3>2. Path Pack / 路径设定包</h3>
-<p>Each project can have its own path pack (JSON file in <code>PathPackSet/</code>). Use the dropdown to switch between packs.</p>
-<p>
-<b>添加新包</b> — Create a new path pack for a project<br>
-<b>删除包</b> — Delete the current path pack
-</p>
-
-<h3>3. Preset Groups / 路径预设组</h3>
-<p>Within each path pack, create multiple preset groups for different path combinations. <b>Click a preset</b> to auto-check its paths in the path collection below.</p>
-<p>
-<b>保存设定</b> — Save currently checked paths as a new preset group<br>
-<b>删除设定</b> — Delete the selected preset group
-</p>
-
-<h3>4. Path Collection / 路径集合</h3>
-<p>Add search paths with <code>{0}</code><code>{1}</code><code>{2}</code>... placeholders that will be replaced by the <b>采样值</b> tokens.<br>
-Check the paths you need, then click a preset on the left to generate file browser tabs.</p>
-<p>Paths only need to be configured in <b>one system's format</b> — the tool auto-converts paths for the current OS (see Section 9).</p>
-<p><b>Right-click menu:</b> Add Path / Delete Path / Edit Selected Path</p>
-<p><b>Double-click</b> a path item to edit it.</p>
-
-<h3>5. File Browser / 文件管理</h3>
-<p>Each generated path opens as a tab. Use the <b>path bar</b> to edit the path and the <b>刷新</b> button to reload.</p>
-<p><b>View Modes / 浏览模式</b> (dropdown next to path bar):</p>
-<ul>
-<li><b>树 Tree</b> — Traditional folder tree view</li>
-<li><b>所有文件 All Files</b> — Recursively list all files in a flat list</li>
-<li><b>序列整理 Sequences</b> — Auto-group frame sequences (e.g. <code>render.%04d.exr 1001-1100</code>), showing frame range and missing frames</li>
-</ul>
-<p><b>Close tabs</b> by clicking the X on each tab.</p>
-
-<h3>6. Shortcuts / 快捷键</h3>
-<table border=1 cellpadding=6 cellspacing=0>
-<tr><th>Key</th><th>Context</th><th>Function / 功能</th></tr>
-<tr><td><b>Alt+1</b></td><td>Global</td><td>Sample from Read node / 从 Read 节点获取</td></tr>
-<tr><td><b>Alt+2</b></td><td>Global</td><td>Sample from script path / 从工程路径获取</td></tr>
-<tr><td><b>C</b></td><td>Tree &amp; Flat</td><td>Copy selected path / 复制选中路径</td></tr>
-<tr><td><b>F</b></td><td>Tree</td><td>Expand to files / 展开到文件</td></tr>
-<tr><td><b>F</b></td><td>Flat</td><td>Open folder in Explorer / 打开所在目录</td></tr>
-<tr><td><b>W</b></td><td>Tree</td><td>Collapse folder / 闭合文件夹</td></tr>
-</table>
-
-<h3>7. Right-Click Menu / 右键菜单</h3>
-<p><b>Tree mode:</b></p>
-<ul>
-<li>复制路径 (C) — Copy path to clipboard</li>
-<li>打开文件 — Open file with system default application</li>
-<li>展开文件夹 — Expand folder one level</li>
-<li>闭合文件夹 (W) — Collapse folder</li>
-<li>展开到文件 (F) — Recursively expand to leaf files</li>
-<li>选中文件夹下的所有文件作为Read导入 — Import all files under folder as Read nodes</li>
-</ul>
-<p><b>Flat / Sequence mode:</b></p>
-<ul>
-<li>复制路径 — Copy path to clipboard</li>
-<li>在资源管理器打开 — Open in system file explorer</li>
-<li>作为Read导入 — Import as Read node</li>
-</ul>
-
-<h3>8. Drag &amp; Drop / 拖拽</h3>
-<p>Files from both tree and flat/sequence list can be dragged into the Nuke Node Graph to create Read nodes.</p>
-
-<h3>9. System Path Conversion / 系统路径转换</h3>
-<p>The <code>xitongchange()</code> function in <code>ZayWPanel.py</code> is called automatically when generating file browser tabs. It detects the current operating system and converts path prefixes accordingly, so you only need to maintain one set of paths per project — they adapt to Windows, Linux, or macOS automatically.</p>
-<p><code>xitongchange()</code> 函数在生成文件浏览器标签页时自动调用，检测当前操作系统并转换路径前缀。只需维护一套路径即可在 Windows、Linux、macOS 间自动适配。</p>
-<p>Edit the function body in <code>ZayWPanel.py</code> to define your own platform-specific path mappings.</p>
-<p>在 <code>ZayWPanel.py</code> 中编辑该函数以定义自己的平台路径映射规则。</p>
-
-<h3>10. Session Memory / 会话记忆</h3>
-<p>The tool automatically remembers your last selections — path pack, sample rule, and preset group — and restores them on next launch.</p>
-<p> 自动记录加载最后最近一次的设置<p>
-<h3>10. github /gitee/ 仓库</h3>
-</p>https://github.com/ZayvinL/ZayTag</p>
-</p>https://gitee.com/q-wuan90/ZayTag</p>
-""")
+        # 直接读取 README.md 作为帮助内容
+        script_dir = CurrentPath.local_path_get()
+        readme_path = os.path.join(script_dir, "README.md")
+        if os.path.exists(readme_path):
+            with open(readme_path, "r", encoding="utf-8") as f:
+                md_content = f.read()
+            # 尝试多种方式渲染 Markdown
+            try:
+                # 优先使用 Python markdown 库
+                import markdown
+                html_content = markdown.markdown(md_content, extensions=["tables", "fenced_code"])
+                help_text.setHtml(html_content)
+            except ImportError:
+                try:
+                    # PySide6 / Qt 5.14+ 内置 Markdown 支持
+                    help_text.setMarkdown(md_content)
+                except AttributeError:
+                    # 兜底：纯文本显示
+                    help_text.setPlainText(md_content)
+        else:
+            help_text.setPlainText("README.md 未找到，请确认文件存在。")
         help_layout = QVBoxLayout(self.widc)
         help_layout.addWidget(help_text)
         self.tab02.addTab(self.widc, "帮助")
